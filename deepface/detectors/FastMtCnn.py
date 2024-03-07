@@ -63,6 +63,7 @@ class FastMtCnnClient(Detector):
         """
         # this is not a must dependency. do not import it in the global level.
         try:
+            import torch
             from facenet_pytorch import MTCNN as fast_mtcnn
         except ModuleNotFoundError as e:
             raise ImportError(
@@ -70,11 +71,12 @@ class FastMtCnnClient(Detector):
                 "Please install using 'pip install facenet-pytorch' "
             ) from e
 
+        device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
         face_detector = fast_mtcnn(
             image_size=160,
             thresholds=[0.6, 0.7, 0.7],  # MTCNN thresholds
             post_process=True,
-            device="cpu",
+            device=device,#"cuda", #"cpu",
             select_largest=False,  # return result in descending order
         )
         return face_detector
